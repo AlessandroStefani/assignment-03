@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Room App</string>
+    <string name="username">Username</string>
+    <string name="confirm">Confirm</string>
+</resources>
