@@ -4,7 +4,7 @@ import random
 
 arduino=serial.Serial('COM4', 9600,timeout=1)
 
-print("Enter   1 to turn ON LED and 0 to turn OFF LED")
+print("Test moving blinds (servo) on arduino")
 
 while 1:
     print(arduino.readline().decode())
