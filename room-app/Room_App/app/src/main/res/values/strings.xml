@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Room App</string>
-    <string name="username">Username</string>
+    <string-array name="Device">
+        <item>isiGiock</item>
+        <item>isiAle</item>
+        <item>isiTest</item>
+    </string-array>
     <string name="confirm">OFF</string>
     <string name="Width">Width roller blinds:</string>
     <string name="Status">STATUS LED</string>

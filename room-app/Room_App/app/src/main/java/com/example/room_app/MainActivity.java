@@ -2,13 +2,21 @@ package com.example.room_app;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+
+import java.lang.reflect.Array;
 
 public class MainActivity extends AppCompatActivity {
     private Button confirmBtn;
+    private String[] devices;
+    private ArrayAdapter<String> arrayAdapter;
+    private AutoCompleteTextView autoCompleteTextView;
     //private EditText usernameEditText;
     //private TextView usernameTextView;
 
@@ -20,7 +28,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //usernameEditText = findViewById(R.id.usernameEditText);
         confirmBtn = findViewById(R.id.confirmBtn);
+        autoCompleteTextView = findViewById(R.id.selectionDevice);
+
         confirmBtn.setText("OFF");
+        devices = getResources().getStringArray(R.array.Device);
+        arrayAdapter = new ArrayAdapter<String>(this, R.layout.dropdown_item, devices);
+        autoCompleteTextView.setAdapter(arrayAdapter);
+
         //usernameTextView = findViewById(R.id.usernameTextView);
         if(savedInstanceState != null) {
             //usernameTextView.setText(savedInstanceState.getString("username"));
