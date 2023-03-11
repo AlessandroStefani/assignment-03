@@ -11,7 +11,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import android.bluetooth.*;
 
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.textfield.TextInputLayout;
@@ -19,30 +23,31 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.lang.reflect.Array;
 
 public class MainActivity extends AppCompatActivity {
+    private static CharSequence CONNECTED = "YES";
+    private static CharSequence NOT_CONNECTED = "NO";
     private Button confirmBtn;
     private String[] devices;
     private ArrayAdapter<String> arrayAdapter;
     private AutoCompleteTextView autoCompleteTextView;
-    //private EditText usernameEditText;
-    //private TextView usernameTextView;
+    private TextView textIsConnected;
+    private SeekBar seekBar;
 
     private int stateLed = 0;
-    private int statusBluetooth = 0; // 0 if no device is connected otherwise 1
+    //all variable for Bluetooth
+    private int statusBluetooth; // 0 if no device is connected otherwise 1
+    private BluetoothAdapter bluetoothAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //usernameEditText = findViewById(R.id.usernameEditText);
         confirmBtn = findViewById(R.id.confirmBtn);
+        textIsConnected = findViewById(R.id.textAskConnection);
+        seekBar = findViewById(R.id.seekBar);
         autoCompleteTextView = findViewById(R.id.selectionDevice);
 
         confirmBtn.setText("OFF");
 
-        //usernameTextView = findViewById(R.id.usernameTextView);
-        if(savedInstanceState != null) {
-            //usernameTextView.setText(savedInstanceState.getString("username"));
-        }
         logInfo("0) on create");
     }
 
@@ -50,17 +55,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        confirmBtn.setOnClickListener(v -> {
-            //final String username = usernameEditText.getText().toString();
-            if (stateLed == 0) {
-                confirmBtn.setText("OFF");
-                stateLed = 1;
-            } else {
-                confirmBtn.setText("ON");
-                stateLed = 0;
-            }
-            //usernameTextView.setText("Hello ".concat(username));
-        });
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        // Check if the bluetooth is enabled
+        if(bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
+            statusBluetooth = 0;
+            textIsConnected.setText(NOT_CONNECTED);
+            confirmBtn.setActivated(false);
+            seekBar.setActivated(false);
+        } else {
+            statusBluetooth = 1;
+            textIsConnected.setText(CONNECTED);
+            confirmBtn.setActivated(true);
+            seekBar.setActivated(true);
+
+            confirmBtn.setOnClickListener(v -> {
+                if (stateLed == 0) {
+                    confirmBtn.setText("OFF");
+                    stateLed = 1;
+                } else {
+                    confirmBtn.setText("ON");
+                    stateLed = 0;
+                }
+            });
+        }
+
         logInfo("1) on start");
     }
 
@@ -68,7 +87,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        // Creazione dei array di stringhe fatto qui
         devices = getResources().getStringArray(R.array.Device);
+
         arrayAdapter = new ArrayAdapter<String>(this, R.layout.dropdown_item, devices);
         autoCompleteTextView.setAdapter(arrayAdapter);
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -78,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
                 String label = parent.getItemAtPosition(position).toString();
                 // showing the text selected
                 Toast.makeText(MainActivity.this, "You selected: " + label, Toast.LENGTH_SHORT).show();
-                statusBluetooth = 1;
             }
         });
 
@@ -115,6 +135,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         logInfo("5) on destroy");
+    }
+
+    private void searchDevice() {
+
+    }
+
+    private void createSocket() {
+
+    }
+
+    private void sendToOutput(String message) {
+
     }
 
     private static void logInfo(String message) {
