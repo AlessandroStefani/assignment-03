@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Room App</string>
     <string name="username">Username</string>
-    <string name="confirm">Confirm</string>
+    <string name="confirm">OFF</string>
+    <string name="Width">Width roller blinds:</string>
+    <string name="Status">STATUS LED</string>
 </resources>
