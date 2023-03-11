@@ -6,9 +6,15 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.Toast;
+
+import com.google.android.material.navigation.NavigationBarView;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.reflect.Array;
 
@@ -21,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     //private TextView usernameTextView;
 
     private int stateLed = 0;
+    private int statusBluetooth = 0; // 0 if no device is connected otherwise 1
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +38,6 @@ public class MainActivity extends AppCompatActivity {
         autoCompleteTextView = findViewById(R.id.selectionDevice);
 
         confirmBtn.setText("OFF");
-        devices = getResources().getStringArray(R.array.Device);
-        arrayAdapter = new ArrayAdapter<String>(this, R.layout.dropdown_item, devices);
-        autoCompleteTextView.setAdapter(arrayAdapter);
 
         //usernameTextView = findViewById(R.id.usernameTextView);
         if(savedInstanceState != null) {
@@ -63,6 +67,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        devices = getResources().getStringArray(R.array.Device);
+        arrayAdapter = new ArrayAdapter<String>(this, R.layout.dropdown_item, devices);
+        autoCompleteTextView.setAdapter(arrayAdapter);
+        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // getting text selected at a certain position
+                String label = parent.getItemAtPosition(position).toString();
+                // showing the text selected
+                Toast.makeText(MainActivity.this, "You selected: " + label, Toast.LENGTH_SHORT).show();
+                statusBluetooth = 1;
+            }
+        });
+
         logInfo("2) on resume (the activity comes to foreground)");
     }
 
@@ -101,4 +120,5 @@ public class MainActivity extends AppCompatActivity {
     private static void logInfo(String message) {
         Log.i(MainActivity.class.getSimpleName(), message);
     }
+
 }
