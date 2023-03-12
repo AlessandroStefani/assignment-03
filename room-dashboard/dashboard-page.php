@@ -7,6 +7,7 @@
 
 <body>
     <h1>ASSIGNMENT-03</h1>
+    <p><?php echo($testPost)?></p>
 
 </body>
 
