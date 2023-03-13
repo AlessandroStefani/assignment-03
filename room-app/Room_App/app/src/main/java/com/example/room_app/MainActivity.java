@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private static CharSequence CONNECTED = "YES";
     private static CharSequence NOT_CONNECTED = "NO";
     private Button confirmBtn;
-    private String[] devices;
+    private String[] devices = new String[]{"a"};
     private ArrayAdapter<String> arrayAdapter;
     private AutoCompleteTextView autoCompleteTextView;
     private TextView textIsConnected;
@@ -54,12 +54,27 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             BluetoothDevice device = null;
+            logInfo("VENGO CHIAMATO??????");
 
             if (BluetoothDevice.ACTION_FOUND.equals(intent.getAction())) {
-                device = intent.getParcelableExtra("BluetoothDevice.EXTRA_DEVICE");
+                device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                logInfo("Il device esiste?" + (device != null));
                 nbDevice.add(device);
-                devices[devices.length-1] = nbDevice.get(nbDevice.lastIndexOf(device)).toString();
-                //arrayAdapter = new ArrayAdapter<String>(this,R.layout.dropdown_item,String[]);
+                /*
+                if (devices[0] == null) {
+                    devices[0] = nbDevice.get(0).toString();
+                } else {
+                    devices[(devices.length-1)] = nbDevice.get(nbDevice.indexOf((devices.length-1))).toString();
+                }
+                 */
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    devices[0] = "";
+                    return;
+                } else {
+                    devices[0] = nbDevice.get(0).getName().toString();
+                }
+                arrayAdapter = new ArrayAdapter<String>(MainActivity.this,R.layout.dropdown_item,devices);
                 autoCompleteTextView.setAdapter(arrayAdapter);
             }
         }
@@ -98,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         /*
         devices = getResources().getStringArray(R.array.Device);
 
-        arrayAdapter = new ArrayAdapter<String>(this, R.layout.dropdown_item, devices);
+        arrayAdapter = new ArrayAdapter<String>(this, R.layout.dropdown_item, a);
         autoCompleteTextView.setAdapter(arrayAdapter);
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -109,7 +124,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "You selected: " + label, Toast.LENGTH_SHORT).show();
             }
         });
-        */
+         */
+
 
         logInfo("2) on resume (the activity comes to foreground)");
     }
