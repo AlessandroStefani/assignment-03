@@ -136,7 +136,6 @@ void remoteActionSerial()
   else // comando sconosciuto
   {
     MsgService.sendMsg("Comando Sconosciuto: " + msgSerial);
-    Serial.println("Comando Sconosciuto: " + msgSerial);
   }
   delete msg;
 }
