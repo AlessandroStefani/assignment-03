@@ -2,8 +2,15 @@ package com.example.room_app;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +28,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.reflect.Array;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     private static CharSequence CONNECTED = "YES";
@@ -37,6 +45,19 @@ public class MainActivity extends AppCompatActivity {
     private int statusBluetooth; // 0 if no device is connected otherwise 1
     private BluetoothAdapter bluetoothAdapter;
 
+    private Set<BluetoothDevice> nbDevice = null;
+    private final BroadcastReceiver br = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            BluetoothDevice device = null;
+
+            if (BluetoothDevice.ACTION_FOUND.equals(intent.getAction())) {
+                device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                nbDevice.add(device);
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,19 +67,11 @@ public class MainActivity extends AppCompatActivity {
         seekBar = findViewById(R.id.seekBar);
         autoCompleteTextView = findViewById(R.id.selectionDevice);
 
-        confirmBtn.setText("OFF");
-
-        logInfo("0) on create");
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        registerReceiver(br, new IntentFilter(BluetoothDevice.ACTION_FOUND));
 
         // Check if the bluetooth is enabled
-        if(bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
+        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
             statusBluetooth = 0;
             textIsConnected.setText(NOT_CONNECTED);
             confirmBtn.setActivated(false);
@@ -79,6 +92,28 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
+        confirmBtn.setText("OFF");
+
+        logInfo("0) on create");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        bluetoothAdapter.startDiscovery();
+        logInfo(nbDevice.toString());
 
         logInfo("1) on start");
     }
@@ -121,6 +156,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        bluetoothAdapter.cancelDiscovery();
         logInfo("4) on stop (the activity is no longer visible to the user)");
     }
 
@@ -134,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(br);
         logInfo("5) on destroy");
     }
 
