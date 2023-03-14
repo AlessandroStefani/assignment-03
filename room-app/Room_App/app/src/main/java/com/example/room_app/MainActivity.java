@@ -100,10 +100,17 @@ public class MainActivity extends AppCompatActivity {
         logInfo("0) on create");
     }
 
+    // Controlla se il Bluetooth è attivo
+    private boolean isBluetoothOnline() {
+        return (bluetoothAdapter != null || bluetoothAdapter.isEnabled());
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
-        searchDevice();
+        if (isBluetoothOnline()) {
+            searchDevice();
+        }
         logInfo("1) on start");
     }
 
@@ -111,24 +118,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         checkIfBluetoothIsOn();
-
-        // Creazione dei array di stringhe fatto qui
-        /*
-        devices = getResources().getStringArray(R.array.Device);
-
-        arrayAdapter = new ArrayAdapter<String>(this, R.layout.dropdown_item, a);
-        autoCompleteTextView.setAdapter(arrayAdapter);
-        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // getting text selected at a certain position
-                String label = parent.getItemAtPosition(position).toString();
-                // showing the text selected
-                Toast.makeText(MainActivity.this, "You selected: " + label, Toast.LENGTH_SHORT).show();
-            }
-        });
-         */
-
 
         logInfo("2) on resume (the activity comes to foreground)");
     }
@@ -150,16 +139,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+            int permissionCheck = checkSelfPermission("Manifest.permission.BLUETOOTH_SCAN");;
+            if (permissionCheck != 0 ) {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN,
+                }, PackageManager.PERMISSION_GRANTED);
+            }
             return;
+        } else {
+            if (bluetoothAdapter.isDiscovering()) {
+                bluetoothAdapter.cancelDiscovery();
+            }
         }
-        bluetoothAdapter.cancelDiscovery();
+
         logInfo("4) on stop (the activity is no longer visible to the user)");
     }
 
@@ -208,6 +199,8 @@ public class MainActivity extends AppCompatActivity {
             textIsConnected.setText(NOT_CONNECTED);
             confirmBtn.setActivated(false);
             seekBar.setActivated(false);
+            arrayAdapter = new ArrayAdapter<String>(MainActivity.this,R.layout.dropdown_item,new ArrayList<>());
+            autoCompleteTextView.setAdapter(arrayAdapter);
         } else {
             statusBluetooth = 1;
             textIsConnected.setText(CONNECTED);
