@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private static CharSequence CONNECTED = "YES";
     private static CharSequence NOT_CONNECTED = "NO";
     private Button confirmBtn;
-    private String[] devices = new String[]{"a"};
+    private ArrayList<String> devices = new ArrayList<>();
     private ArrayAdapter<String> arrayAdapter;
     private AutoCompleteTextView autoCompleteTextView;
     private TextView textIsConnected;
@@ -60,20 +60,23 @@ public class MainActivity extends AppCompatActivity {
                 device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 logInfo("Il device esiste?" + (device != null));
                 nbDevice.add(device);
-                /*
-                if (devices[0] == null) {
-                    devices[0] = nbDevice.get(0).toString();
-                } else {
-                    devices[(devices.length-1)] = nbDevice.get(nbDevice.indexOf((devices.length-1))).toString();
-                }
-                 */
+
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT)
                         != PackageManager.PERMISSION_GRANTED) {
-                    devices[0] = "";
-                    return;
+                    int permissionCheck = checkSelfPermission("Manifest.permission.BLUETOOTH_CONNECT");;
+                    if (permissionCheck != 0 ) {
+                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT,
+                         }, PackageManager.PERMISSION_GRANTED);
+                    }
                 } else {
-                    devices[0] = nbDevice.get(0).getName().toString();
+                    // Controlla se il nome del dispositivo trovato non è nullo
+                    // e che non lo contenga già nell'arraylist
+                    if (device.getName() != null && !devices.contains(device.getName())) {
+                        devices.add(device.getName());
+                        logInfo(devices.toString());
+                    }
                 }
+
                 arrayAdapter = new ArrayAdapter<String>(MainActivity.this,R.layout.dropdown_item,devices);
                 autoCompleteTextView.setAdapter(arrayAdapter);
             }
