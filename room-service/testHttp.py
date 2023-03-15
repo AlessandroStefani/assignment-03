@@ -1,8 +1,8 @@
 import requests
 
-payload = "luci"
+payload = {"luci":"on"}
 
-r = requests.get('http://localhost/assignment-03/room-dashboard/dashboard.php', params=payload)
+r = requests.post('http://localhost/assignment-03/room-dashboard/dashboard.php', data=payload)
 print(r.status_code)
 t = r.text
 print(t)

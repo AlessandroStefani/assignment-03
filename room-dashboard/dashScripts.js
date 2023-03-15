@@ -1,20 +1,38 @@
 
 const button = document.getElementById("onoff");
 
+var xmlhttp = new XMLHttpRequest();
+xmlhttp.onload = function () {
+    if (this.responseText == "on") {
+        goOn();
+    } else if (this.responseText == "off") {
+        goOff()
+    }
+};
+xmlhttp.open("GET", "dashboard.php?luci", true);
+xmlhttp.send();
 
-function onOff() {
+function change() {
     switch (button.innerHTML) {
         case "ON": //immagino aggiungerò un comando al dashboard.php
-            button.innerHTML = "OFF";
-            button.style.color = "white";
-            button.style.backgroundColor = "black"
+            goOff();
             break;
         case "OFF":
-            button.innerHTML = "ON";
-            button.style.color = "black";
-            button.style.backgroundColor = "yellow"
+            goOn();
             break;
         default:
             break;
     }
+}
+
+function goOff() {
+    button.innerHTML = "OFF";
+    button.style.color = "white";
+    button.style.backgroundColor = "black"
+}
+
+function goOn() {
+    button.innerHTML = "ON";
+    button.style.color = "black";
+    button.style.backgroundColor = "yellow"
 }
