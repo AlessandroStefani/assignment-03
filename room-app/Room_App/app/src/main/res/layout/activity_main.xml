@@ -28,6 +28,16 @@
         app:layout_constraintStart_toEndOf="@+id/textConnected"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/updateButton"
+        android:layout_width="99dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="40dp"
+        android:text="Update"
+        app:layout_constraintBottom_toTopOf="@+id/textInputLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
@@ -47,7 +57,7 @@
             android:layout_weight="1"
             android:inputType="none"
             android:paddingTop="3dp"
-            android:text="Select a device" />
+            android:text="@string/Select"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 

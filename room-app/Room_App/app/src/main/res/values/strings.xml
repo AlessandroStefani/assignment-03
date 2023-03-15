@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Room App</string>
     <string name="Connected">Bluetooth is Online:</string>
+    <string name="Select">Select a device</string>
     <string-array name="Device">
         <item>isiGiock</item>
         <item>isiAle</item>
