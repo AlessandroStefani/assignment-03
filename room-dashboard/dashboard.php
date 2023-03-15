@@ -18,13 +18,17 @@ if (isset($_POST["tapparelle"])) { // es tapparelle:57
 
 //GET
 if (isset($_GET["tapparelle"])) {
-
+    $jsonString = file_get_contents('data.json');
+    $data = json_decode($jsonString, true);
+    echo $data["tapparelle"];
 } else if (isset($_GET["luci"])) {
     $jsonString = file_get_contents('data.json');
     $data = json_decode($jsonString, true);
     echo $data["luci"];
 } else if (isset($_GET["storico"])) {
-
+    $jsonString = file_get_contents('data.json');
+    $data = json_decode($jsonString, true);
+    echo $data["storico"];
 }
 
 ?>
