@@ -1,14 +1,18 @@
 
+const button = document.getElementById("onoff");
 
 
 function onOff() {
-    button = document.getElementById("onoff").innerHTML;
-    switch (button) {
-        case "ON":
-            document.getElementById("onoff").innerHTML = "OFF";
+    switch (button.innerHTML) {
+        case "ON": //immagino aggiungerò un comando al dashboard.php
+            button.innerHTML = "OFF";
+            button.style.color = "white";
+            button.style.backgroundColor = "black"
             break;
         case "OFF":
-            document.getElementById("onoff").innerHTML = "ON";
+            button.innerHTML = "ON";
+            button.style.color = "black";
+            button.style.backgroundColor = "yellow"
             break;
         default:
             break;
