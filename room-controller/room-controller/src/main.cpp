@@ -25,6 +25,7 @@ String msgSerial = "";
 String response = "";
 /*
  * 0 - 100 range
+ * 0 su, 100 giù
  */
 int blindsStatus = 0;
 /**
@@ -132,6 +133,15 @@ void remoteActionSerial()
     {
       MsgService.sendMsg("Valore fuori range [0-100]");
     }
+  }
+  else if (msgSerial == "night")
+  {
+    blindsStatus = 100;
+    blinds.write(170); // sarebbe 180 ma il servo fa rumori strani quindi lo tengo a 170
+    MsgService.sendMsg("Livello Tapparelle: 100");
+    lightsStatus = 0;
+    led.off();
+    MsgService.sendMsg("Luci Spente");
   }
   else // comando sconosciuto
   {
