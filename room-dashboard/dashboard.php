@@ -20,7 +20,9 @@ if (isset($_POST["tapparelle"])) { // es tapparelle:57
 if (isset($_GET["tapparelle"])) {
 
 } else if (isset($_GET["luci"])) {
-    echo $_GET["luci"];
+    $jsonString = file_get_contents('data.json');
+    $data = json_decode($jsonString, true);
+    echo $data["luci"];
 } else if (isset($_GET["storico"])) {
 
 }
