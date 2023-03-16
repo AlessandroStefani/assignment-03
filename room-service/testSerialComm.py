@@ -22,15 +22,27 @@ while 1:
 
 while 1:
 
-    read = arduino.readline().decode()
-    if (len(read)):
-        if (read == "Luci Accese"):
+    serMsg = arduino.readline().decode()
+    if (len(serMsg)):
+        if (serMsg == "Luci Accese"):
             data = {"luci":"on"}
             msgHttp.post(data)
-        if (read == "Luci Spente"):
+        if (serMsg == "Luci Spente"):
             data = {"luci":"off"}
             msgHttp.post(data)
-        if (read.startswith("Livello Tapparelle:")):
-            lv = read.split(":")[1]
+        if (serMsg.startswith("Livello Tapparelle:")):
+            lv = serMsg.split(":")[1]
             data = {"tapparelle":lv}
             msgHttp.post(data)
+            
+    #da implementare in dashboard
+    dashMsg = eval(msgHttp.get("comando"))
+    if "tapparelle" in dashMsg:
+        serCom = "servo:" + dashMsg["tapparelle"] + "\n"
+        arduino.write(serCom) #forse da sistemare
+    elif "luci" in dashMsg:
+        serCom = "luci" + dashMsg["luci"] + "\n"
+        arduino(serCom)
+        
+            
+        
