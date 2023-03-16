@@ -42,6 +42,8 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity {
 
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
+    private static final String MESSAGE_TRY = "Hello World!";
     private static CharSequence CONNECTED = "YES";
     private static CharSequence NOT_CONNECTED = "NO";
     private Button confirmBtn;
@@ -57,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<String, String> mapAddress = new HashMap<>();
     private ArrayAdapter<String> arrayAdapter;
     private int statusBluetooth; // 0 if no device is connected otherwise 1
+
+    private boolean deviceIsConnected = false;
     private BluetoothAdapter bluetoothAdapter;
 
     private BluetoothSocket bluetoothSocket;
@@ -219,15 +223,12 @@ public class MainActivity extends AppCompatActivity {
             statusBluetooth = 0;
             textIsConnected.setText(NOT_CONNECTED);
             autoCompleteTextView.setText(R.string.Select);
-            //confirmBtn.setActivated(false);
-            //seekBar.setActivated(false);
             arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.dropdown_item, new ArrayList<>());
             autoCompleteTextView.setAdapter(arrayAdapter);
         } else {
             statusBluetooth = 1;
             textIsConnected.setText(CONNECTED);
-            //confirmBtn.setActivated(true);
-            //seekBar.setActivated(true);
+
         }
     }
 
@@ -271,8 +272,23 @@ public class MainActivity extends AppCompatActivity {
                         "You selected: " + deviceSel + " with addr: " + mapAddress.get(deviceSel),
                         Toast.LENGTH_SHORT).show();
 
-                // fare in modo che sto metodo vengo fatto partire da un'altro thread
-                //createSocket(mapAddress.get(deviceSel));
+                // creation of socket using a thread
+                Thread th1 = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        createSocket(mapAddress.get(deviceSel));
+                    }
+                });
+
+                th1.start();
+            }
+        });
+    }
+
+    private void sendMessageToToast(String message) {
+        MainActivity.this.runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -281,7 +297,6 @@ public class MainActivity extends AppCompatActivity {
         BluetoothDevice bd = bluetoothAdapter.getRemoteDevice(address);
 
         try {
-            Toast.makeText(MainActivity.this, "Creation of socket", Toast.LENGTH_SHORT).show();
             if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT)
                     != PackageManager.PERMISSION_GRANTED) {
                 int permissionCheck = checkSelfPermission("Manifest.permission.BLUETOOTH_SCAN");
@@ -290,36 +305,64 @@ public class MainActivity extends AppCompatActivity {
                             Manifest.permission.BLUETOOTH_SCAN}, PackageManager.PERMISSION_GRANTED);
                 }
             } else {
+                sendMessageToToast("Creation of socket");
                 bluetoothSocket = bd.createRfcommSocketToServiceRecord(MainActivity.MY_UUID);
+                deviceIsConnected = true;
             }
         } catch (Exception e) {
-            Toast.makeText(MainActivity.this, "Failed to create socket", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Failed to create socket");
         }
 
         try {
-            Toast.makeText(MainActivity.this, "Trying to connect...", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Trying to connect...");
             bluetoothSocket.connect();
         } catch (Exception e) {
-            Toast.makeText(MainActivity.this, "Failed to connect", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Failed to connect");
+            try {
+                bluetoothSocket.close();
+            } catch (Exception e2) {
+                sendMessageToToast("Error during close of socket");
+            }
         }
 
         try {
-            Toast.makeText(MainActivity.this, "Getting outputStream...", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Getting outputStream...");
             outputStream = bluetoothSocket.getOutputStream();
         } catch (Exception e) {
-            Toast.makeText(MainActivity.this, "Failed to get outputStream", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Failed to get outputStream");
+            try {
+                bluetoothSocket.close();
+            } catch (Exception e2) {
+                sendMessageToToast("Error during close of socket");
+            }
         }
 
+        if (deviceIsConnected) {
+            sendToOutput(MainActivity.MESSAGE_TRY);
+        }
+
+
         try {
-            Toast.makeText(MainActivity.this, "Closing socket", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Closing socket");
             bluetoothSocket.close();
         } catch (Exception e) {
-            Toast.makeText(MainActivity.this, "Error during close of socket", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Error during close of socket");
         }
+
     }
 
     private void sendToOutput(String message) {
-
+        try {
+            sendMessageToToast("Sending message...");
+            outputStream.write(message.getBytes());
+        } catch (Exception e) {
+            sendMessageToToast("Error during send a message");
+            try {
+                bluetoothSocket.close();
+            } catch (Exception e2) {
+                sendMessageToToast("Error during close of socket");
+            }
+        }
     }
 
     private static void logInfo(String message) {
