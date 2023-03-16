@@ -84,7 +84,7 @@ void remoteActionBT()
     if (blindsStatus >= 0 && blindsStatus <= 100)
     {
       blinds.write(map(blindsStatus, 0, 100, 0, 180));
-      response = "Livello Tapparelle: ";
+      response = "Livello Tapparelle:";
       response += blindsStatus;
       msgServiceBT.sendMsg(Msg(response + "%"));
       MsgService.sendMsg(response); // comunica a room-service il nuovo stato delle tapparelle
@@ -125,7 +125,7 @@ void remoteActionSerial()
     if (blindsStatus >= 0 && blindsStatus <= 100)
     {
       blinds.write(map(blindsStatus, 0, 100, 0, 180));
-      response = "Livello Tapparelle: ";
+      response = "Livello Tapparelle:";
       response += blindsStatus;
       MsgService.sendMsg(response); // comunica a room-service il nuovo stato delle tapparelle
     }
@@ -138,7 +138,7 @@ void remoteActionSerial()
   {
     blindsStatus = 100;
     blinds.write(170); // sarebbe 180 ma il servo fa rumori strani quindi lo tengo a 170
-    MsgService.sendMsg("Livello Tapparelle: 100");
+    MsgService.sendMsg("Livello Tapparelle:100");
     lightsStatus = 0;
     led.off();
     MsgService.sendMsg("Luci Spente");
