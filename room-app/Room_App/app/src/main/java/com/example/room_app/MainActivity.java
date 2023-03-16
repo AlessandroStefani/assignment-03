@@ -219,15 +219,12 @@ public class MainActivity extends AppCompatActivity {
             statusBluetooth = 0;
             textIsConnected.setText(NOT_CONNECTED);
             autoCompleteTextView.setText(R.string.Select);
-            //confirmBtn.setActivated(false);
-            //seekBar.setActivated(false);
             arrayAdapter = new ArrayAdapter<String>(MainActivity.this, R.layout.dropdown_item, new ArrayList<>());
             autoCompleteTextView.setAdapter(arrayAdapter);
         } else {
             statusBluetooth = 1;
             textIsConnected.setText(CONNECTED);
-            //confirmBtn.setActivated(true);
-            //seekBar.setActivated(true);
+
         }
     }
 
@@ -271,8 +268,23 @@ public class MainActivity extends AppCompatActivity {
                         "You selected: " + deviceSel + " with addr: " + mapAddress.get(deviceSel),
                         Toast.LENGTH_SHORT).show();
 
-                // fare in modo che sto metodo vengo fatto partire da un'altro thread
-                //createSocket(mapAddress.get(deviceSel));
+                // creation of socket using a thread
+                Thread th1 = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        createSocket(mapAddress.get(deviceSel));
+                    }
+                });
+
+                th1.start();
+            }
+        });
+    }
+
+    private void sendMessageToToast(String message) {
+        MainActivity.this.runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -281,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
         BluetoothDevice bd = bluetoothAdapter.getRemoteDevice(address);
 
         try {
-            Toast.makeText(MainActivity.this, "Creation of socket", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Creation of socket");
             if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT)
                     != PackageManager.PERMISSION_GRANTED) {
                 int permissionCheck = checkSelfPermission("Manifest.permission.BLUETOOTH_SCAN");
@@ -293,28 +305,38 @@ public class MainActivity extends AppCompatActivity {
                 bluetoothSocket = bd.createRfcommSocketToServiceRecord(MainActivity.MY_UUID);
             }
         } catch (Exception e) {
-            Toast.makeText(MainActivity.this, "Failed to create socket", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Failed to create socket");
         }
 
         try {
-            Toast.makeText(MainActivity.this, "Trying to connect...", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Trying to connect...");
             bluetoothSocket.connect();
         } catch (Exception e) {
-            Toast.makeText(MainActivity.this, "Failed to connect", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Failed to connect");
+            try {
+                bluetoothSocket.close();
+            } catch (Exception e2) {
+                sendMessageToToast("Error during close of socket");
+            }
         }
 
         try {
-            Toast.makeText(MainActivity.this, "Getting outputStream...", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Getting outputStream...");
             outputStream = bluetoothSocket.getOutputStream();
         } catch (Exception e) {
-            Toast.makeText(MainActivity.this, "Failed to get outputStream", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Failed to get outputStream");
+            try {
+                bluetoothSocket.close();
+            } catch (Exception e2) {
+                sendMessageToToast("Error during close of socket");
+            }
         }
 
         try {
-            Toast.makeText(MainActivity.this, "Closing socket", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Closing socket");
             bluetoothSocket.close();
         } catch (Exception e) {
-            Toast.makeText(MainActivity.this, "Error during close of socket", Toast.LENGTH_SHORT).show();
+            sendMessageToToast("Error during close of socket");
         }
     }
 
