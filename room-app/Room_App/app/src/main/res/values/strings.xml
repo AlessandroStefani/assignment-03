@@ -7,6 +7,7 @@
         <item>isiAle</item>
         <item>isiTest</item>
     </string-array>
+    <string name="disconnect">Disconnect</string>
     <string name="confirm">OFF</string>
     <string name="Width">Width roller blinds:</string>
     <string name="Status">STATUS LED</string>

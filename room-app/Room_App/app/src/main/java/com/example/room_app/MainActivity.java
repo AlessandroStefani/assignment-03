@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private static CharSequence NOT_CONNECTED = "NO";
     private Button confirmBtn;
     private Button updateBtn;
+
+    private Button disconnectBtn;
     private AutoCompleteTextView autoCompleteTextView;
     private TextView textIsConnected;
     private SeekBar seekBar;
@@ -72,11 +74,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             BluetoothDevice device = null;
-            logInfo("VENGO CHIAMATO??????");
+            //logInfo("VENGO CHIAMATO??????");
 
             if (BluetoothDevice.ACTION_FOUND.equals(intent.getAction())) {
                 device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                logInfo("Il device esiste?" + (device != null));
+                //logInfo("Il device esiste?" + (device != null));
                 nbDevice.add(device);
 
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT)
@@ -110,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         confirmBtn = findViewById(R.id.confirmBtn);
         updateBtn = findViewById(R.id.updateButton);
+        disconnectBtn = findViewById(R.id.disconnectButton);
         textIsConnected = findViewById(R.id.textAskConnection);
         seekBar = findViewById(R.id.seekBar);
         autoCompleteTextView = findViewById(R.id.selectionDevice);
@@ -206,19 +209,21 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             bluetoothAdapter.startDiscovery();
-            if (bluetoothAdapter.isDiscovering()) {
-                //logInfo("" + (nbDevice == null));
-                //logInfo("SIIII STA SCOPRENDO COSE");
-            } else {
-                //logInfo("NOOO NON STA SCOPRENDO COSE");
-            }
         }
     }
 
     private void checkIfBluetoothIsOn() {
+        logInfo("IL DISPOSITIVO è CONNESSO"+ deviceIsConnected);
+        if (deviceIsConnected) {
+            confirmBtn.setEnabled(true);
+            disconnectBtn.setEnabled(true);
+        } else {
+            confirmBtn.setEnabled(false);
+            seekBar.setEnabled(false);
+            disconnectBtn.setEnabled(false);
+        }
+
         // Check if the bluetooth is enabled
-        confirmBtn.setEnabled(false);
-        seekBar.setEnabled(false);
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
             statusBluetooth = 0;
             textIsConnected.setText(NOT_CONNECTED);
@@ -228,7 +233,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             statusBluetooth = 1;
             textIsConnected.setText(CONNECTED);
-
         }
     }
 
@@ -254,11 +258,16 @@ public class MainActivity extends AppCompatActivity {
 
         confirmBtn.setOnClickListener(v -> {
             if (stateLed == 0) {
-                confirmBtn.setText("OFF");
+                confirmBtn.setText("ON");
                 stateLed = 1;
             } else {
-                confirmBtn.setText("ON");
+                confirmBtn.setText("OFF");
                 stateLed = 0;
+            }
+            logInfo("IL DISPOSITIVO è CONNESSO?" + deviceIsConnected);
+            if(deviceIsConnected) {
+                //logInfo(Integer.toString(stateLed)+"\n");
+                sendToOutput(Integer.toString(stateLed)+"\n");
             }
         });
 
@@ -283,6 +292,24 @@ public class MainActivity extends AppCompatActivity {
                 th1.start();
             }
         });
+
+        disconnectBtn.setOnClickListener(v -> {
+            if (deviceIsConnected) {
+                try {
+                    sendMessageToToast("Closing socket");
+                    bluetoothSocket.close();
+                } catch (Exception e) {
+                    sendMessageToToast("Error during close of socket");
+                }
+
+                autoCompleteTextView.setText(R.string.Select);
+                confirmBtn.setEnabled(false);
+                seekBar.setEnabled(false);
+                disconnectBtn.setEnabled(false);
+            }
+        });
+
+
     }
 
     private void sendMessageToToast(String message) {
@@ -308,8 +335,14 @@ public class MainActivity extends AppCompatActivity {
                 sendMessageToToast("Creation of socket");
                 bluetoothSocket = bd.createRfcommSocketToServiceRecord(MainActivity.MY_UUID);
                 deviceIsConnected = true;
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        checkIfBluetoothIsOn();
+                    }
+                });
             }
         } catch (Exception e) {
+            deviceIsConnected = false;
             sendMessageToToast("Failed to create socket");
         }
 
@@ -335,18 +368,6 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception e2) {
                 sendMessageToToast("Error during close of socket");
             }
-        }
-
-        if (deviceIsConnected) {
-            sendToOutput(MainActivity.MESSAGE_TRY);
-        }
-
-
-        try {
-            sendMessageToToast("Closing socket");
-            bluetoothSocket.close();
-        } catch (Exception e) {
-            sendMessageToToast("Error during close of socket");
         }
 
     }
