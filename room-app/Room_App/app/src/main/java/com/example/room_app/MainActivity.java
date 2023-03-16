@@ -42,6 +42,8 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity {
 
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+
+    private static final String MESSAGE_TRY = "Hello World!";
     private static CharSequence CONNECTED = "YES";
     private static CharSequence NOT_CONNECTED = "NO";
     private Button confirmBtn;
@@ -57,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<String, String> mapAddress = new HashMap<>();
     private ArrayAdapter<String> arrayAdapter;
     private int statusBluetooth; // 0 if no device is connected otherwise 1
+
+    private boolean deviceIsConnected = false;
     private BluetoothAdapter bluetoothAdapter;
 
     private BluetoothSocket bluetoothSocket;
@@ -293,7 +297,6 @@ public class MainActivity extends AppCompatActivity {
         BluetoothDevice bd = bluetoothAdapter.getRemoteDevice(address);
 
         try {
-            sendMessageToToast("Creation of socket");
             if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT)
                     != PackageManager.PERMISSION_GRANTED) {
                 int permissionCheck = checkSelfPermission("Manifest.permission.BLUETOOTH_SCAN");
@@ -302,7 +305,9 @@ public class MainActivity extends AppCompatActivity {
                             Manifest.permission.BLUETOOTH_SCAN}, PackageManager.PERMISSION_GRANTED);
                 }
             } else {
+                sendMessageToToast("Creation of socket");
                 bluetoothSocket = bd.createRfcommSocketToServiceRecord(MainActivity.MY_UUID);
+                deviceIsConnected = true;
             }
         } catch (Exception e) {
             sendMessageToToast("Failed to create socket");
@@ -332,16 +337,32 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        if (deviceIsConnected) {
+            sendToOutput(MainActivity.MESSAGE_TRY);
+        }
+
+
         try {
             sendMessageToToast("Closing socket");
             bluetoothSocket.close();
         } catch (Exception e) {
             sendMessageToToast("Error during close of socket");
         }
+
     }
 
     private void sendToOutput(String message) {
-
+        try {
+            sendMessageToToast("Sending message...");
+            outputStream.write(message.getBytes());
+        } catch (Exception e) {
+            sendMessageToToast("Error during send a message");
+            try {
+                bluetoothSocket.close();
+            } catch (Exception e2) {
+                sendMessageToToast("Error during close of socket");
+            }
+        }
     }
 
     private static void logInfo(String message) {
