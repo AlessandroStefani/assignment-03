@@ -3,15 +3,19 @@
  * thanks to FreeRTOS support.  
  *
  */
+#include "Led.h" 
  
 TaskHandle_t Task1;
 TaskHandle_t Task2;
+
+Led* led1;
 
 const int led_1 = 4;
 const int led_2 = 5;
 
 void setup() {
   Serial.begin(115200); 
+  led1 = new Led(led_1, OUTPUT);
   pinMode(led_1, OUTPUT);
   pinMode(led_2, OUTPUT);
 
@@ -27,9 +31,11 @@ void Task1code( void * parameter ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    digitalWrite(led_1, HIGH);
+    led1->turnOn();
+    //digitalWrite(led_1, HIGH);
     delay(500);
-    digitalWrite(led_1, LOW);
+    led1->turnOff();
+    //digitalWrite(led_1, LOW);
     delay(500);
   } 
 }
