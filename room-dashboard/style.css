@@ -1,6 +1,16 @@
+*{
+}
+
 #onoff {
     height: 50px;
     width: 100px;
     border-radius: 5px;
     border: 0;
+}
+
+
+.disegnino {
+    height: 300px;
+    width: 150px;
+    background-color: skyblue;
 }
