@@ -24,7 +24,6 @@ void setup() {
   Serial.begin(115200); 
   led1 = new Led(led_1, OUTPUT);
   pinMode(led_1, OUTPUT);
-  pinMode(led_2, OUTPUT);
   ls = new LightSensor(LIGHTSENSOR_PIN);
   pir = new PIR(PIR_PIN);
 
@@ -40,13 +39,13 @@ void Task1code( void * parameter ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    led1->turnOn();
+    //led1->turnOn();
     //digitalWrite(led_1, HIGH);
-    delay(500);
-    led1->turnOff();
+    //delay(500);
+    //led1->turnOff();
     //digitalWrite(led_1, LOW);
     delay(500);
-    ls->getIntensity();
+    pir->isSomeoneDetected();
   } 
 }
 
@@ -55,9 +54,9 @@ void Task2code( void * parameter ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    digitalWrite(led_2, HIGH);
+    //digitalWrite(led_2, HIGH);
     delay(1000);
-    digitalWrite(led_2, LOW);
+    //digitalWrite(led_2, LOW);
     delay(1000);
   }
 }
