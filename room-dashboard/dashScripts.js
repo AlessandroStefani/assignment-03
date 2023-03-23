@@ -1,16 +1,32 @@
 
 const button = document.getElementById("onoff");
+const slider = document.getElementById("myRange");
+const output = document.getElementById("output");
 
-var xmlhttp = new XMLHttpRequest();
-xmlhttp.onload = function () {
+let getLuci = new XMLHttpRequest();
+getLuci.onload = function () {
     if (this.responseText == "on") {
         goOn();
     } else if (this.responseText == "off") {
-        goOff()
+        goOff();
     }
 };
-xmlhttp.open("GET", "dashboard.php?luci", true);
-xmlhttp.send();
+getLuci.open("GET", "dashboard.php?luci", false);
+getLuci.send();
+
+let getTapparelle = new XMLHttpRequest();
+getTapparelle.onload = function() {
+   slider.value = this.responseText;
+}
+getTapparelle.open("GET", "dashboard.php?tapparelle", false);
+getTapparelle.send();
+
+output.innerHTML = `${slider.value}%`;
+
+slider.oninput = function() {
+  output.innerHTML = `${this.value}%`;
+  postCommand("tapparelle:" + this.value);
+}
 
 function change() {
     switch (button.innerHTML) {
@@ -29,31 +45,31 @@ function goOff() {
     button.innerHTML = "OFF";
     button.style.color = "white";
     button.style.backgroundColor = "black"
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onload = function () {
+    var postCmdLuci = new XMLHttpRequest();
+    postCmdLuci.onload = function () {
         postCommand("luci:off");
     };
-    xmlhttp.open("POST", "dashboard.php", true);
-    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xmlhttp.send("luci=off");
+    postCmdLuci.open("POST", "dashboard.php", true);
+    postCmdLuci.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    postCmdLuci.send("luci=off");
 }
 
 function goOn() {
     button.innerHTML = "ON";
     button.style.color = "black";
     button.style.backgroundColor = "yellow"
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onload = function () {
+    var postCmdLuci = new XMLHttpRequest();
+    postCmdLuci.onload = function () {
         postCommand("luci:on");
     };
-    xmlhttp.open("POST", "dashboard.php", true);
-    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xmlhttp.send("luci=on");
+    postCmdLuci.open("POST", "dashboard.php", true);
+    postCmdLuci.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    postCmdLuci.send("luci=on");
 }
 
 function postCommand(comando) {
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("POST", "dashboard.php", true);
-    xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xmlhttp.send(`comando=${comando}`);
+    var postCmd = new XMLHttpRequest();
+    postCmd.open("POST", "dashboard.php", true);
+    postCmd.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    postCmd.send(`comando=${comando}`);
 }

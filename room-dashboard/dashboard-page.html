@@ -10,12 +10,15 @@
     <h1>ASSIGNMENT-03</h1>
     <div class="luci">
         <h2>Luci</h2>
+        <p>Stato Attuale:</p>
             <button id="onoff" type="button" onclick="change()">ON</button>
     </div>
     <div class="tapparelle">
         <h2>Tapparelle</h2>
-        <div><p>XX%</p></div>
-        <div class="disegnino"></div>
+        <p id="output">0%</p>
+        <div class="slidecontainer">
+            <input type="range" min="0" max="100" value="50" class="slider" id="myRange">
+        </div>
 
     </div>
     <div class="tabella luci">

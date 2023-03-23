@@ -50,7 +50,6 @@ while 1:
         msgHttp.post(data)
     elif "luci" in dashMsg:
         serCmd = dashMsg.split(":")[1] + "\n"
-        print(serCmd)
         arduino.write(serCmd.encode())
         data = {"comando":""}
         msgHttp.post(data)
