@@ -41,15 +41,17 @@ while 1:
 
     # da implementare in dashboard
     dashMsg = msgHttp.get("comando")
-    print(dashMsg)
+    if len(dashMsg) > 0:
+        print("dashboard dice: " + dashMsg)
     if "tapparelle" in dashMsg:
-        serCom = "servo:" + dashMsg["tapparelle"] + "\n"
-        arduino.write(serCom) #forse da sistemare
+        serCmd = "servo:" + dashMsg.split(":")[1] + "\n"
+        arduino.write(serCmd.encode()) #forse da sistemare
         data = {"comando":""}
         msgHttp.post(data)
     elif "luci" in dashMsg:
-        serCom = "luci" + dashMsg["luci"] + "\n"
-        arduino(serCom)
+        serCmd = dashMsg.split(":")[1] + "\n"
+        print(serCmd)
+        arduino.write(serCmd.encode())
         data = {"comando":""}
         msgHttp.post(data)
         
