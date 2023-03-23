@@ -267,7 +267,11 @@ public class MainActivity extends AppCompatActivity {
             logInfo("IL DISPOSITIVO è CONNESSO?" + deviceIsConnected);
             if(deviceIsConnected) {
                 //logInfo(Integer.toString(stateLed)+"\n");
-                sendToOutput(Integer.toString(stateLed)+"\n");
+                if (stateLed == 0) {
+                    sendToOutput("off"+"\n");
+                } else if (stateLed == 1) {
+                    sendToOutput("on"+"\n");
+                }
             }
         });
 
