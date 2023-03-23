@@ -21,9 +21,9 @@ void PIR::calibratePIR() {
 bool PIR::isSomeoneDetected() {
   detectedStatus = digitalRead(pin);
   if (detectedStatus) {
-    Serial.println("detected!");
+    //Serial.println("detected!");
   } else {
-    Serial.println("no more detected.");
+    //Serial.println("no more detected.");
   }
   return detectedStatus;
 }

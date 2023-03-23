@@ -9,7 +9,8 @@
 #include "SmartLTask.h"
 
 #define LIGHTSENSOR_PIN 7 //the pin must be analog
-#define PIR_PIN 10
+#define PIR_PIN 37
+#define LED_PIN 4
  
 TaskHandle_t Task1;
 TaskHandle_t sTask;
@@ -21,14 +22,11 @@ LightSensor* ls;
 PIR* pir;
 SmartLTask* slt;
 
-const int led_1 = 4;
-const int led_2 = 5;
-
 void setup() {
   Serial.begin(115200); 
   ls = new LightSensor(LIGHTSENSOR_PIN);
   pir = new PIR(PIR_PIN);
-  slt = new SmartLTask(led_1, pir, ls);  
+  slt = new SmartLTask(LED_PIN, pir, ls);  
 
   // CPU 0 is for protocols like: Wifi or Bluetooth (RF Comunication)
   xTaskCreatePinnedToCore(Task1code,"Task1",10000,NULL,1,&Task1,0);                         
@@ -51,13 +49,8 @@ void Task1code( void * parameter ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    //led1->turnOn();
-    //digitalWrite(led_1, HIGH);
-    //delay(500);
-    //led1->turnOff();
-    //digitalWrite(led_1, LOW);
     delay(500);
-    pir->isSomeoneDetected();
+    //pir->isSomeoneDetected();
   } 
 }
 
