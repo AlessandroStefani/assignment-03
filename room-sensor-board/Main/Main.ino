@@ -138,7 +138,7 @@ void WifiTask( void * parameter ){
 
     unsigned long now = millis();
 
-    if (now - lastMsgTime > 10000) {
+    if (now - lastMsgTime > 1000) {
       lastMsgTime = now;
 
       // essenzialmente cerco di mandare il messaggio di notifica solo una volta
