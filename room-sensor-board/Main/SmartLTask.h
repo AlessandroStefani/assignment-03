@@ -10,13 +10,14 @@ class SmartLTask {
   PIR* pir;
   Led* led;
   LightSensor* LS;
+  bool lighOn;
   enum { ON, TURNING_OFF, OFF } state;
 
   public:
 
   SmartLTask(int pin, PIR* pir, LightSensor* lightSensor);
   void tick();
-  void sendApproveMessage();
+  bool sendApproveMessage();
 
 };
 
