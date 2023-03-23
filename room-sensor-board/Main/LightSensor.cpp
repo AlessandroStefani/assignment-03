@@ -9,10 +9,12 @@ LightSensor::LightSensor(int pin) {
   pinMode(pin, INPUT);
 }
 
-double LightSensor::getIntensity() {
+void LightSensor::calculateIntensity() {
   int value = analogRead(pin);
   valueInVolt = ((double) value) * 5/1024;
-  Serial.println(String(value) + " -> in volt: " + valueInVolt );
+  //Serial.println(String(value) + " -> in volt: " + valueInVolt );
+}
 
+double LightSensor::getIntensity() {
   return valueInVolt;
 }

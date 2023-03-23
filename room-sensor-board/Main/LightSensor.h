@@ -10,6 +10,7 @@ class LightSensor {
 
   LightSensor(int pin);
 
+  void calculateIntensity();
   double getIntensity();
 
 };

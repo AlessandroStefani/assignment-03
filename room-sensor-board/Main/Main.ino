@@ -6,32 +6,44 @@
 #include "Led.h"
 #include "LightSensor.h"
 #include "PIR.h"
+#include "SmartLTask.h"
 
 #define LIGHTSENSOR_PIN 7 //the pin must be analog
 #define PIR_PIN 10
  
 TaskHandle_t Task1;
-TaskHandle_t Task2;
+TaskHandle_t sTask;
+TaskHandle_t pTask;
+TaskHandle_t lsTask;
 
 Led* led1;
 LightSensor* ls;
 PIR* pir;
+SmartLTask* slt;
 
 const int led_1 = 4;
 const int led_2 = 5;
 
 void setup() {
   Serial.begin(115200); 
-  led1 = new Led(led_1, OUTPUT);
-  pinMode(led_1, OUTPUT);
   ls = new LightSensor(LIGHTSENSOR_PIN);
   pir = new PIR(PIR_PIN);
+  slt = new SmartLTask(led_1, pir, ls);  
 
+  // CPU 0 is for protocols like: Wifi or Bluetooth (RF Comunication)
   xTaskCreatePinnedToCore(Task1code,"Task1",10000,NULL,1,&Task1,0);                         
   delay(500); 
 
-  xTaskCreatePinnedToCore(Task2code,"Task2",10000,NULL,1,&Task2,1);          
-    delay(500); 
+  // CPU 1 is for running application program
+  // the fifth arg of function is for the priority
+  xTaskCreatePinnedToCore(PIRTask,"pTask",10000,NULL,1,&pTask,1);          
+  delay(500);
+
+  xTaskCreatePinnedToCore(LightSensorTask, "lsTask", 10000, NULL, 1, &lsTask, 1);
+  delay(500);
+
+  xTaskCreatePinnedToCore(SmartTask,"sTask",10000,NULL,2,&sTask,1);          
+  delay(500);
 }
 
 void Task1code( void * parameter ){
@@ -49,15 +61,33 @@ void Task1code( void * parameter ){
   } 
 }
 
-void Task2code( void * parameter ){
-  Serial.print("Task2 is running on core ");
+void SmartTask( void * parameter ){
+  Serial.print("SmartLTask is running on core ");
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    //digitalWrite(led_2, HIGH);
+    slt->tick();
     delay(1000);
-    //digitalWrite(led_2, LOW);
-    delay(1000);
+  }
+}
+
+void PIRTask( void * parameter ){
+  Serial.print("PIRTask is running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;){
+    pir->changeState();
+    delay(500);
+  }
+}
+
+void LightSensorTask( void * parameter ){
+  Serial.print("LightSensorTask is running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;){
+    ls->calculateIntensity();
+    delay(250);
   }
 }
 
