@@ -1,9 +1,17 @@
 <?php
 //POST
 if (isset($_POST["tapparelle"])) { // es tapparelle:57
-    echo post("tapparelle");
+    if ($_POST["tapparelle"] >= 0 && $_POST["tapparelle"] <= 100) { //da vedere se funziona
+        echo post("tapparelle");
+    } else {
+        echo "comando tapparelle non riconosciuto";
+    }
 } else if (isset($_POST["luci"])) { // es luci:on TODO la data/ora
-    echo post("luci");
+    if ($_POST["luci"] == "on" || $_POST["luci"] == "off"){
+        echo post("luci");
+    } else {        
+        echo "comando luci non riconosciuto";
+    }
 } else if (isset($_POST["comando"])) {
     echo post("comando");
 }
