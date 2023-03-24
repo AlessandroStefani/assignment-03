@@ -23,7 +23,7 @@ SmartLTask* slt;
 /* wifi network info */
 
 const char* ssid = "Wind3 HUB - 03C89C";
-const char* password = "43ys4kxxtc762yxx";
+const char* password = "43ys4kxxtc762yxx"; //inserire la password del wi-fi da usare
 
 /* MQTT server address */
 const char* mqtt_server = "broker.mqtt-dashboard.com";
