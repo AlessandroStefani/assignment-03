@@ -23,8 +23,12 @@ getTapparelle.send();
 
 output.innerHTML = `${slider.value}%`;
 
-slider.oninput = function() {
+slider.onmouseup = function() {
   output.innerHTML = `${this.value}%`;
+  var postLvTapparelle = new XMLHttpRequest();
+  postLvTapparelle.open("POST", "dashboard.php", false)
+  postLvTapparelle.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  postLvTapparelle.send("tapparelle="+this.value);
   postCommand("tapparelle:" + this.value);
 }
 
