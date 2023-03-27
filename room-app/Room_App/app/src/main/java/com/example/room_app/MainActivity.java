@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String MESSAGE_TRY = "Hello World!";
     private static CharSequence CONNECTED = "YES";
     private static CharSequence NOT_CONNECTED = "NO";
+    private static int MIN_DEGREES = 0;
+    private static int MAX_DEGREES = 180;
     private Button confirmBtn;
     private Button updateBtn;
 
@@ -114,7 +116,33 @@ public class MainActivity extends AppCompatActivity {
         updateBtn = findViewById(R.id.updateButton);
         disconnectBtn = findViewById(R.id.disconnectButton);
         textIsConnected = findViewById(R.id.textAskConnection);
+
         seekBar = findViewById(R.id.seekBar);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            seekBar.setMin(MIN_DEGREES);
+            seekBar.setMax(MAX_DEGREES);
+        }
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (deviceIsConnected) {
+                    sendMessageToToast("You are sending this value" + progress);
+                    sendToOutput(Integer.toString(progress));
+                    seekBar.setMax(MAX_DEGREES);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         autoCompleteTextView = findViewById(R.id.selectionDevice);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -338,12 +366,6 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 sendMessageToToast("Creation of socket");
                 bluetoothSocket = bd.createRfcommSocketToServiceRecord(MainActivity.MY_UUID);
-                deviceIsConnected = true;
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        checkIfBluetoothIsOn();
-                    }
-                });
             }
         } catch (Exception e) {
             deviceIsConnected = false;
@@ -353,8 +375,20 @@ public class MainActivity extends AppCompatActivity {
         try {
             sendMessageToToast("Trying to connect...");
             bluetoothSocket.connect();
+            deviceIsConnected = true;
+            MainActivity.this.runOnUiThread(new Runnable() {
+                public void run() {
+                    checkIfBluetoothIsOn();
+                }
+            });
         } catch (Exception e) {
             sendMessageToToast("Failed to connect");
+            deviceIsConnected = false;
+            MainActivity.this.runOnUiThread(new Runnable() {
+                public void run() {
+                    checkIfBluetoothIsOn();
+                }
+            });
             try {
                 bluetoothSocket.close();
             } catch (Exception e2) {
