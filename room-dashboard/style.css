@@ -6,6 +6,12 @@ h1 {
 .luci {
     text-align: center;
 }
+table {
+  width: 100%;
+}
+table, th, td {
+  border: 1px solid black;
+}
 
 .tapparelle {
     text-align: center;

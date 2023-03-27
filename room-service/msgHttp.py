@@ -9,8 +9,3 @@ def post(data):
 def get(param):
     r = requests.get('http://localhost/assignment-03/room-dashboard/dashboard.php', params=param)
     return r.text
-
-'''
-tTOd=eval(t)
-print(tTOd["tapparelle"])
-'''

@@ -1,4 +1,6 @@
 <?php
+
+
 //POST
 if (isset($_POST["tapparelle"])) { // es tapparelle:57
     if ($_POST["tapparelle"] >= 0 && $_POST["tapparelle"] <= 100) { //da vedere se funziona
@@ -24,7 +26,7 @@ if (isset($_GET["comando"])) {
 } else if (isset($_GET["luci"])) {
     echo get("luci");
 } else if (isset($_GET["storico"])) {
-    echo get("storico");
+    echo json_encode(get("storico"));
 }
 
 function post($dataType){

@@ -3,11 +3,6 @@ import msgHttp
 import time
 import random
 
-# num = random.randint(101,200)
-# msg = "svo:" + str(num) + "\n"
-# time.sleep(2)
-# arduino.write(msg.encode())
-
 arduino = 0
 
 while 1:
@@ -45,7 +40,7 @@ while 1:
         print("dashboard dice: " + dashMsg)
     if "tapparelle" in dashMsg:
         serCmd = "servo:" + dashMsg.split(":")[1] + "\n"
-        arduino.write(serCmd.encode()) #forse da sistemare
+        arduino.write(serCmd.encode())
         data = {"comando":""}
         msgHttp.post(data)
     elif "luci" in dashMsg:
