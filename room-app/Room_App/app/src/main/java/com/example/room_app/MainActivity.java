@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private static CharSequence CONNECTED = "YES";
     private static CharSequence NOT_CONNECTED = "NO";
     private static int MIN_DEGREES = 0;
-    private static int MAX_DEGREES = 180;
+    private static int MAX_DEGREES = 100;
     private Button confirmBtn;
     private Button updateBtn;
 
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (deviceIsConnected) {
                     sendMessageToToast("You are sending this value" + progress);
-                    sendToOutput(Integer.toString(progress));
+                    sendToOutput("servo:"+Integer.toString(progress)+"\n");
                     seekBar.setMax(MAX_DEGREES);
                 }
             }
@@ -245,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
         if (deviceIsConnected) {
             confirmBtn.setEnabled(true);
             disconnectBtn.setEnabled(true);
+            seekBar.setEnabled(true);
         } else {
             confirmBtn.setEnabled(false);
             seekBar.setEnabled(false);
