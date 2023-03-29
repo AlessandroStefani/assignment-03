@@ -8,27 +8,31 @@ const output = document.getElementById("output");
 let getTabella = new XMLHttpRequest();
 getTabella.onload = function () {
     dati = JSON.parse(this.responseText);
-    let dateIn;
-    let oreIn;
-    let dateOut;
-    let oreOut;
-    let diff;
+    let dateIn, dateOut;
+    let oreIn, oreOut;
+    let totDiffSec, diffSec, diffMin, diffHours;
     for (acc in dati) {
         dateIn = new Date(dati[acc].in * 1000);
         oreIn = [dateIn.getHours(), dateIn.getMinutes(), dateIn.getSeconds()];
         if (dati[acc].out == "/") {
             dateOut = dati[acc].out;
             oreOut = ["/", "/", "/"];
-            diff = "/";
+            diffSec = "/";
+            diffMin = "/";
+            diffHours = "/"
         } else {
             dateOut = new Date(dati[acc].out * 1000);
             oreOut = [dateOut.getHours(), dateOut.getMinutes(), dateOut.getSeconds()];
-            diff = (dateOut - dateIn) / 1000;
+            totDiffSec = (dateOut - dateIn) / 1000;
+            diffSec = totDiffSec % 60;
+            diffMin = Math.floor(totDiffSec / 60);
+            diffHours = Math.floor(diffMin / 60);
+            diffMin = diffMin % 60;
         }
         table.innerHTML += `<tr>
         <td>${oreIn[0]}:${oreIn[1]}:${oreIn[2]}</td>
         <td>${oreOut[0]}:${oreOut[1]}:${oreOut[2]}</td>
-        <td>${diff}</td>
+        <td>${diffHours}:${diffMin}:${diffSec}</td>
         </tr>`;
     }//DA SISTEMARE
 }
@@ -38,9 +42,13 @@ getTabella.send();
 let getLuci = new XMLHttpRequest();
 getLuci.onload = function () {
     if (this.responseText == "on") {
-        goOn();
+        button.innerHTML = "ON";
+        button.style.color = "black";
+        button.style.backgroundColor = "yellow"
     } else if (this.responseText == "off") {
-        goOff();
+        button.innerHTML = "OFF";
+        button.style.color = "white";
+        button.style.backgroundColor = "black"
     }
 };
 getLuci.open("GET", "dashboard.php?luci", false);
@@ -49,13 +57,13 @@ getLuci.send();
 let getTapparelle = new XMLHttpRequest();
 getTapparelle.onload = function () {
     slider.value = this.responseText;
+    output.innerHTML = `${slider.value}%`;
 }
 getTapparelle.open("GET", "dashboard.php?tapparelle", false);
 getTapparelle.send();
 
 //slider
 
-output.innerHTML = `${slider.value}%`;
 
 slider.onmouseup = function () {
     output.innerHTML = `${this.value}%`;
@@ -86,6 +94,7 @@ function goOff() {
     var postCmdLuci = new XMLHttpRequest();
     postCmdLuci.onload = function () {
         postCommand("luci:off");
+        window.location.reload();
     };
     postCmdLuci.open("POST", "dashboard.php", true);
     postCmdLuci.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -99,6 +108,7 @@ function goOn() {
     var postCmdLuci = new XMLHttpRequest();
     postCmdLuci.onload = function () {
         postCommand("luci:on");
+        window.location.reload();
     };
     postCmdLuci.open("POST", "dashboard.php", true);
     postCmdLuci.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");

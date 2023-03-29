@@ -17,7 +17,7 @@ while 1:
 
 
 while 1:
-
+    # messaggi da arduino, trasmessi alla dashboard
     serMsg = arduino.readline().decode().strip()
     if (len(serMsg)):
         if (serMsg == "Luci Accese"):
@@ -34,7 +34,7 @@ while 1:
             print(data)
             print(msgHttp.post(data))
 
-    # da implementare in dashboard
+    # comandi dalla dashboard, trasmessi ad arduino
     dashMsg = msgHttp.get("comando")
     if len(dashMsg) > 0:
         print("dashboard dice: " + dashMsg)
@@ -48,6 +48,7 @@ while 1:
         arduino.write(serCmd.encode())
         data = {"comando":""}
         msgHttp.post(data)
-        
-            
+    
+    # segnali dai sensori, trasmessi ad arduino e dashboard
+    #TOTOOT DODO 
         
