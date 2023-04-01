@@ -1,21 +1,22 @@
-import serial
+from serial import Serial
+from threading import Thread
+import mqttComm
 import msgHttp
-import time
-import random
 
 arduino = 0
 
 while 1:
     porta = input("inserire nome porta seriale: ")
     try:
-        arduino = serial.Serial(porta, 9600, timeout=1)
+        arduino = Serial(porta, 9600, timeout=1)
     except:
         print("errore nella connessione tramite porta: " + porta)
     if (arduino):
         print("connesso a porta: " + porta)
         break
 
-
+mqttThread = Thread(None, mqttComm.loop, None)
+mqttThread.start()
 while 1:
     # messaggi da arduino, trasmessi alla dashboard
     serMsg = arduino.readline().decode().strip()
@@ -41,14 +42,18 @@ while 1:
     if "tapparelle" in dashMsg:
         serCmd = "servo:" + dashMsg.split(":")[1] + "\n"
         arduino.write(serCmd.encode())
-        data = {"comando":""}
+        data = {"comando": ""}
         msgHttp.post(data)
     elif "luci" in dashMsg:
         serCmd = dashMsg.split(":")[1] + "\n"
         arduino.write(serCmd.encode())
-        data = {"comando":""}
+        data = {"comando": ""}
         msgHttp.post(data)
-    
+
     # segnali dai sensori, trasmessi ad arduino e dashboard
-    #TOTOOT DODO 
-        
+    # TOTOOT DODO
+    mqttComm.lock.acquire()
+    sensorMsg = mqttComm.mqttMsg
+    mqttComm.lock.release()
+    if sensorMsg != "":
+        print(mqttComm.mqttMsg)
