@@ -29,7 +29,7 @@ const char* password = "43ys4kxxtc762yxx"; //inserire la password del wi-fi da u
 const char* mqtt_server = "broker.mqtt-dashboard.com";
 
 /* MQTT topic */
-const char* topic = "esiot-2022";
+const char* topic = "assignment-03";
 
 /* MQTT client management */
 
