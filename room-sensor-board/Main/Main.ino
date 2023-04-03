@@ -22,8 +22,8 @@ SmartLTask* slt;
 
 /* wifi network info */
 
-const char* ssid = "Wind3 HUB - 03C89C";
-const char* password = "43ys4kxxtc762yxx"; //inserire la password del wi-fi da usare
+const char* ssid = "Realme GT Neo 3";
+const char* password = "Giock201"; //inserire la password del wi-fi da usare
 
 /* MQTT server address */
 const char* mqtt_server = "broker.mqtt-dashboard.com";
@@ -41,7 +41,10 @@ unsigned long lastMsgTime = 0;
 char msg[MSG_BUFFER_SIZE];
 int value = 0;
 
-bool messageAlreadySent = false;
+bool messageOnSent = false;
+bool messageOffSent = false;
+bool messageInSent = false;
+bool messageOutSent = false;
 
 void setup_wifi() {
 
@@ -141,20 +144,50 @@ void WifiTask( void * parameter ){
     if (now - lastMsgTime > 1000) {
       lastMsgTime = now;
 
-      // essenzialmente cerco di mandare il messaggio di notifica solo una volta
-      // tramite il booleano messageAlreadySent
-      bool sendMessage = slt->sendApproveMessage();
-      if (sendMessage && !messageAlreadySent) {
-        messageAlreadySent = true;
+      // essenzialmente cerco di mandare il messaggio di notifica solo una volta per ogni
+      // messaggio mandato tramite MQTT
+      bool statusLed = slt->sendApproveMessage();
+      bool someoneDetected = pir->isSomeoneDetected();
+
+      // if someone is detected in the room send: in
+      // otherwise send: out
+      // if the led is on send: on
+      // otherwise send: off
+      if(someoneDetected && !messageInSent) {
+        messageInSent = true;
         /* creating a msg in the buffer */
-        snprintf (msg, MSG_BUFFER_SIZE, "on");
+        snprintf (msg, MSG_BUFFER_SIZE, "in");
 
         Serial.println(String("Publishing message: ") + msg);
     
         /* publishing the msg */
         client.publish(topic, msg);
-      } else if (!sendMessage) {
-        messageAlreadySent = false;
+
+        messageOutSent = false;
+      } else if (!someoneDetected && !messageOutSent) {
+        messageOutSent = true;
+
+        snprintf (msg, MSG_BUFFER_SIZE, "out");
+        Serial.println(String("Publishing message: ") + msg);
+        client.publish(topic, msg);
+
+        messageInSent = false;
+      } else if (statusLed && !messageOnSent) {
+        messageOnSent = true;
+        
+        snprintf (msg, MSG_BUFFER_SIZE, "on");
+        Serial.println(String("Publishing message: ") + msg);
+        client.publish(topic, msg);
+
+        messageOffSent = false;
+      } else if (!statusLed && !messageOffSent) {
+        messageOffSent = true;
+
+        snprintf (msg, MSG_BUFFER_SIZE, "off");
+        Serial.println(String("Publishing message: ") + msg);
+        client.publish(topic, msg);
+
+        messageOnSent = false;
       }
     }
     

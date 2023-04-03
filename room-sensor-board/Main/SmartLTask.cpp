@@ -4,7 +4,7 @@
 
 #define INHIBIT_LS 0
 
-const double Lmax = 4.0;
+const double Lmax = 15.0;
 
 SmartLTask::SmartLTask(int ledPin, PIR* pir, LightSensor* lightSensor) {
   this->pir = pir;
