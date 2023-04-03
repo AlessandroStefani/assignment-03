@@ -15,7 +15,7 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     global mqttMsg
     with lock:
-        mqttMsg = str(msg.payload)
+        mqttMsg = msg.payload
 
 def loop():
     client = mqtt.Client("ass-03.Comm")
