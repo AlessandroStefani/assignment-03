@@ -155,43 +155,36 @@ void WifiTask( void * parameter ){
       // otherwise send: off
       if(someoneDetected && !messageInSent) {
         messageInSent = true;
-        /* creating a msg in the buffer */
-        snprintf (msg, MSG_BUFFER_SIZE, "in");
-
-        Serial.println(String("Publishing message: ") + msg);
-    
-        /* publishing the msg */
-        client.publish(topic, msg);
-
+        publishMessage("in");
         messageOutSent = false;
       } else if (!someoneDetected && !messageOutSent) {
         messageOutSent = true;
-
-        snprintf (msg, MSG_BUFFER_SIZE, "out");
-        Serial.println(String("Publishing message: ") + msg);
-        client.publish(topic, msg);
-
+        publishMessage("out");
         messageInSent = false;
       } else if (statusLed && !messageOnSent) {
         messageOnSent = true;
-        
-        snprintf (msg, MSG_BUFFER_SIZE, "on");
-        Serial.println(String("Publishing message: ") + msg);
-        client.publish(topic, msg);
-
+        publishMessage("on");
         messageOffSent = false;
       } else if (!statusLed && !messageOffSent) {
         messageOffSent = true;
-
-        snprintf (msg, MSG_BUFFER_SIZE, "off");
-        Serial.println(String("Publishing message: ") + msg);
-        client.publish(topic, msg);
-
+        publishMessage("off");
         messageOnSent = false;
       }
     }
     
   } 
+}
+
+void publishMessage(String message) {
+
+  char messageChar[message.length() + 1];
+  strcpy(messageChar, message.c_str()); 
+  
+  /* creating a msg in the buffer */
+  snprintf (msg, MSG_BUFFER_SIZE, messageChar);
+  Serial.println(String("Publishing message: ") + msg);
+  /* publishing the msg */
+  client.publish(topic, msg);
 }
 
 void SmartTask( void * parameter ){
