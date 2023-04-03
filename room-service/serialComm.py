@@ -53,7 +53,8 @@ while 1:
     # segnali dai sensori, trasmessi ad arduino e dashboard
     # TOTOOT DODO
     mqttComm.lock.acquire()
-    sensorMsg = mqttComm.mqttMsg
+    if mqttComm.mqttMsg != "":
+        sensorMsg = mqttComm.mqttMsg
+        print(sensorMsg)
+        mqttComm.mqttMsg = ""
     mqttComm.lock.release()
-    if sensorMsg != "":
-        print(mqttComm.mqttMsg)
