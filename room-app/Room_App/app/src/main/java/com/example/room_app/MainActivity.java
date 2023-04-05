@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int stateLed = 0;
 
-    //all variable for Bluetooth
+    //variables for Bluetooth
     private ArrayList<String> devices = new ArrayList<>();
     private HashMap<String, String> mapAddress = new HashMap<>();
     private ArrayAdapter<String> arrayAdapter;
@@ -76,11 +76,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             BluetoothDevice device = null;
-            //logInfo("VENGO CHIAMATO??????");
 
             if (BluetoothDevice.ACTION_FOUND.equals(intent.getAction())) {
                 device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                //logInfo("Il device esiste?" + (device != null));
                 nbDevice.add(device);
 
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT)
@@ -92,8 +90,6 @@ public class MainActivity extends AppCompatActivity {
                         }, PackageManager.PERMISSION_GRANTED);
                     }
                 } else {
-                    // Controlla se il nome del dispositivo trovato non è nullo
-                    // e che non lo contenga già nell'arraylist
                     if (device.getName() != null && !devices.contains(device.getName())) {
                         devices.add(device.getName());
                         mapAddress.put(device.getName(), device.getAddress());
@@ -153,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         logInfo("0) on create");
     }
 
-    // Controlla se il Bluetooth è attivo
+    // check if the bluetooth is active
     private boolean isBluetoothOnline() {
         return (bluetoothAdapter != null || bluetoothAdapter.isEnabled());
     }
@@ -211,7 +207,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         logInfo("4-5) on save instance");
-//        savedInstanceState.putString("username", usernameTextView.getText().toString());
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -223,8 +218,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void searchDevice() {
-        // Questo if serve per capire se abbiamo garantito i permessi o meno, se non lo abbiamo fatto
-        // chiede all'utente di darglieli e se li ha già inizia a scoprire i device attorno
         if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_SCAN) !=
                 PackageManager.PERMISSION_GRANTED) {
             int permissionCheck = checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
@@ -265,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // metodo usato per settare tutti i listener di ogni componente dell'app
+    // sets all the listeners of app's component
     private void setAllListener() {
         updateBtn.setOnClickListener(v -> {
             checkIfBluetoothIsOn();
