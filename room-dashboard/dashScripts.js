@@ -87,6 +87,8 @@ function change() {
     }
 }
 
+
+// funzioni bottone
 function goOff() {
     button.innerHTML = "OFF";
     button.style.color = "white";
@@ -115,6 +117,7 @@ function goOn() {
     postCmdLuci.send("luci=on");
 }
 
+//inoltro comandi
 function postCommand(comando) {
     var postCmd = new XMLHttpRequest();
     postCmd.open("POST", "dashboard.php", true);
