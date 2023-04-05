@@ -4,14 +4,10 @@ from threading import Lock
 lock = Lock()
 mqttMsg = ""
 
-# The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     print("Mqtt connected with result code "+str(rc))
-    # Subscribing in on_connect() means that if we lose the connection and
-    # reconnect then subscriptions will be renewed.
     client.subscribe("assignment-03")
 
-# The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
     global mqttMsg
     with lock:
