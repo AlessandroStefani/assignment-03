@@ -1,13 +1,13 @@
 <?php
 
 //POST
-if (isset($_POST["tapparelle"])) { // es tapparelle:57
-    if ($_POST["tapparelle"] >= 0 && $_POST["tapparelle"] <= 100) { //da vedere se funziona
+if (isset($_POST["tapparelle"])) {
+    if ($_POST["tapparelle"] >= 0 && $_POST["tapparelle"] <= 100) {
         echo post("tapparelle");
     } else {
         echo "comando tapparelle non riconosciuto";
     }
-} else if (isset($_POST["luci"])) { // es luci:on TODO la data/ora
+} else if (isset($_POST["luci"])) {
     if ($_POST["luci"] == "on" || $_POST["luci"] == "off"){
         aggDatiTabella($_POST["luci"], time());
         echo post("luci");
