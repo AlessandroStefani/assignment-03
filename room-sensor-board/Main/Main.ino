@@ -67,7 +67,6 @@ void setup_wifi() {
 }
 
 /* MQTT subscribing callback */
-// PENSO CHE QUESTO METODO SARÀ DA TOGLIERE, PER ADESSO LO TENGO PER TESTING
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.println(String("Message arrived on [") + topic + "] len: " + length );
 }
@@ -144,8 +143,6 @@ void WifiTask( void * parameter ){
     if (now - lastMsgTime > 1000) {
       lastMsgTime = now;
 
-      // essenzialmente cerco di mandare il messaggio di notifica solo una volta per ogni
-      // messaggio mandato tramite MQTT
       bool statusLed = slt->sendApproveMessage();
       bool someoneDetected = pir->isSomeoneDetected();
 
