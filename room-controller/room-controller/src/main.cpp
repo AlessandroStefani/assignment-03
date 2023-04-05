@@ -110,14 +110,12 @@ void remoteActionSerial()
     led.on();
     lightsStatus = 1;
     response = "Luci Accese";
-    //MsgService.sendMsg(response); // comunica a room-service il nuovo stato delle luci COSA CH NON SERVE
   }
   else if (msgSerial.equals("off")) // spegnimento luci
   {
     led.off();
     lightsStatus = 0;
     response = "Luci Spente";
-    //MsgService.sendMsg(response); // comunica a room-service il nuovo stato delle luci
   }
   else if (msgSerial.startsWith("servo:")) // movimento tapparelle
   {
@@ -127,7 +125,6 @@ void remoteActionSerial()
       blinds.write(map(blindsStatus, 0, 100, 0, 180));
       response = "Livello Tapparelle:";
       response += blindsStatus;
-      //MsgService.sendMsg(response); // comunica a room-service il nuovo stato delle tapparelle
     }
     else // comando tapparelle fuori range
     {
@@ -138,10 +135,8 @@ void remoteActionSerial()
   {
     blindsStatus = 100;
     blinds.write(170); // sarebbe 180 ma il servo fa rumori strani quindi lo tengo a 170
-    //MsgService.sendMsg("Livello Tapparelle:100");
     lightsStatus = 0;
     led.off();
-    //MsgService.sendMsg("Luci Spente");
   }
   else // comando sconosciuto
   {
